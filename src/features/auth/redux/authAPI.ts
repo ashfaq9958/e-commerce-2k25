@@ -1,14 +1,12 @@
-import axios from "axios";
 import type { LoginPayload, RegisterPayload } from "../types/auth.types";
-
-const BASE_URL = import.meta.env.VITE_BASE_URL;
+import { post } from "@/utils/http";
 
 export const loginAPI = async (data: LoginPayload) => {
-  const response = await axios.post(`${BASE_URL}/auth/login`, data);
-  return response;
+  const response = await post(`/auth/login`, data);
+  return response.data.user;
 };
 
 export const registerAPI = async (data: RegisterPayload) => {
-  const response = await axios.post(`${BASE_URL}/auth/register`, data);
-  return response;
+  const response = await post(`/auth/register`, data);
+  return response.data.user;
 };
