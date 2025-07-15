@@ -4,8 +4,10 @@ import "./index.css";
 import App from "./App.tsx";
 import { Provider } from "react-redux";
 import { store } from "./store/index.ts";
-import { Toaster } from "react-hot-toast";
+// import { Toaster } from "react-hot-toast";
+
 import GlobalToast from "./components/GlobalToast.tsx";
+import { Toaster } from "sonner";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

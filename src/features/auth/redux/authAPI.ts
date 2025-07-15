@@ -3,10 +3,11 @@ import { post } from "@/utils/http";
 
 export const loginAPI = async (data: LoginPayload) => {
   const response = await post(`/auth/login`, data);
-  return response.data.user;
+  return response?.data;
 };
 
 export const registerAPI = async (data: RegisterPayload) => {
   const response = await post(`/auth/register`, data);
-  return response.data.user;
+  console.log("authAPI.ts ", response);
+  return response.data;
 };

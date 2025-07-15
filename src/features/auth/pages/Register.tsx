@@ -1,7 +1,6 @@
-// components/Auth/RegisterForm.tsx
-import { User, Mail, Eye, EyeClosed } from "lucide-react";
+import { User, Mail, Eye, EyeClosed, Image } from "lucide-react";
 import google from "../../../assets/google.png";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -14,14 +13,19 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
+import { registerUser } from "../redux/authThunk";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 
 const RegisterForm = () => {
+  // -------------------- State --------------------
   const [isVisible, setIsVisible] = useState(false);
+  const [preview, setPreview] = useState<string | null>(null);
 
-  const toggleVisibility = () => {
-    setIsVisible((prev) => !prev);
-  };
+  // -------------------- Dispatch --------------------
+  const dispatch = useAppDispatch();
+  const { isLoading, isAuthenticated } = useAppSelector((state) => state.auth);
 
+  // -------------------- Form Setup --------------------
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -29,14 +33,67 @@ const RegisterForm = () => {
       username: "",
       password: "",
       email: "",
+      avatar: undefined,
     },
   });
 
-  const onSubmit = (formData: z.infer<typeof registerSchema>) => {
-    console.log(formData);
+  // -------------------- Toggle Password Visibility --------------------
+  const toggleVisibility = () => setIsVisible((prev) => !prev);
+
+  // -------------------- Avatar Watcher --------------------
+  const watchAvatar = form.watch("avatar");
+  const { reset } = form;
+
+  useEffect(() => {
+    if (
+      watchAvatar &&
+      watchAvatar.length > 0 &&
+      watchAvatar[0] instanceof File
+    ) {
+      const file = watchAvatar[0];
+      const reader = new FileReader();
+
+      reader.onloadend = () => {
+        setPreview(reader.result as string);
+      };
+
+      reader.readAsDataURL(file);
+    } else {
+      setPreview(null);
+    }
+  }, [watchAvatar]);
+
+  const onSubmit = (data: z.infer<typeof registerSchema>) => {
+    const formData = new FormData();
+
+    formData.append("fullname", data.fullname);
+    formData.append("username", data.username);
+    formData.append("email", data.email);
+    formData.append("password", data.password);
+
+    if (data.avatar && data.avatar[0]) {
+      formData.append("avatar", data.avatar[0]);
+    }
+
+    dispatch(registerUser(formData)).then((res: any) => {
+      if (res.meta.requestStatus === "fulfilled") {
+        reset(); // ✅ reset form values
+        setPreview(null); // ✅ clear preview
+      }
+    });
   };
+
   return (
     <div className="w-full max-w-md mx-auto px-4">
+      {preview && (
+        <div className="flex justify-center mb-1">
+          <img
+            src={preview}
+            alt="Avatar Preview"
+            className="w-14 h-14 object-cover rounded-full border border-gray-300 shadow-sm"
+          />
+        </div>
+      )}
       <h1 className="text-2xl font-bold text-gray-900 text-center mb-6">
         Step into Smarter Shopping
       </h1>
@@ -53,7 +110,7 @@ const RegisterForm = () => {
                     <Input
                       {...field}
                       placeholder="Full Name"
-                      className="h-12 border-none w-full py-3 pr-12 pl-5 bg-gray-100 rounded-lg text-base text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                      className="h-11 border-none w-full py-3 pr-12 pl-5 bg-gray-100 rounded-lg text-base text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-300"
                     />
                     <User className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-600" />
                   </div>
@@ -74,9 +131,44 @@ const RegisterForm = () => {
                     <Input
                       {...field}
                       placeholder="Username"
-                      className="h-12 border-none w-full py-3 pr-12 pl-5 bg-gray-100 rounded-lg text-base text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                      className="h-11 border-none w-full py-3 pr-12 pl-5 bg-gray-100 rounded-lg text-base text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-300"
                     />
                     <User className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-600" />
+                  </div>
+                </FormControl>
+                <FormMessage className="text-start text-xs" />
+              </FormItem>
+            )}
+          />
+
+          {/* Picture */}
+          <FormField
+            name="avatar"
+            control={form.control}
+            render={({ field: { onChange, ref, name } }) => (
+              <FormItem>
+                <FormControl>
+                  <div className="relative">
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      name={name}
+                      ref={ref}
+                      onChange={(e) => {
+                        const fileList = e.target.files;
+                        if (fileList && fileList.length > 0) {
+                          onChange(fileList); // 👈 Important: Pass FileList to RHF
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            setPreview(reader.result as string);
+                          };
+                          reader.readAsDataURL(fileList[0]);
+                        }
+                      }}
+                      className="h-11 border-none w-full py-3 pr-12 pl-5 bg-gray-100 rounded-lg text-base text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                    />
+
+                    <Image className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-600" />
                   </div>
                 </FormControl>
                 <FormMessage className="text-start text-xs" />
@@ -93,10 +185,10 @@ const RegisterForm = () => {
                 <FormControl>
                   <div className="relative">
                     <Input
-                    autoComplete="email"
+                      autoComplete="email"
                       {...field}
                       placeholder="Email"
-                      className="h-12 border-none w-full py-3 pr-12 pl-5 bg-gray-100 rounded-lg text-base text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                      className="h-11 border-none w-full py-3 pr-12 pl-5 bg-gray-100 rounded-lg text-base text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-300"
                     />
                     <Mail className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-600" />
                   </div>
@@ -118,7 +210,7 @@ const RegisterForm = () => {
                       {...field}
                       type={isVisible ? "text" : "password"}
                       placeholder="••••••••"
-                      className="h-12 border-none w-full py-3 pr-12 pl-5 bg-gray-100 rounded-lg text-base text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                      className="h-11 border-none w-full py-3 pr-12 pl-5 bg-gray-100 rounded-lg text-base text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-300"
                     />
                     <span
                       onClick={toggleVisibility}
@@ -140,9 +232,13 @@ const RegisterForm = () => {
           {/* Sign Up Button */}
           <button
             type="submit"
-            className="w-full h-12 cursor-pointer bg-gradient-to-r from-gray-700 to-gray-900 rounded-lg text-white font-semibold hover:from-black hover:to-black transition-all shadow-md mb-6"
+            disabled={isLoading}
+            className={`w-full h-12 rounded-lg text-white font-semibold transition-all shadow-md mb-3
+    bg-gradient-to-r from-gray-700 to-gray-900 hover:from-black hover:to-black
+    ${isLoading ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}
+  `}
           >
-            Sign Up
+            {isLoading ? "Signing you up..." : "Sign Up"}
           </button>
 
           {/* Social Divider */}

@@ -5,7 +5,7 @@ import type { AuthState } from "../types/auth.types";
 const initialState: AuthState = {
   isAuthenticated: false,
   user: null,
-  loading: false,
+  isLoading: false,
   error: null,
 };
 
@@ -24,16 +24,16 @@ const authSlice = createSlice({
 
     builder
       .addCase(loginUser.pending, (state) => {
-        state.loading = true;
+        state.isLoading = true;
         state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
-        state.loading = false;
+        state.isLoading = false;
         state.isAuthenticated = true;
         state.user = action.payload;
       })
       .addCase(loginUser.rejected, (state, action) => {
-        state.loading = false;
+        state.isLoading = false;
         state.error = action.payload as string;
       });
 
@@ -41,16 +41,16 @@ const authSlice = createSlice({
 
     builder
       .addCase(registerUser.pending, (state) => {
-        state.loading = true;
+        state.isLoading = true;
         state.error = null;
       })
       .addCase(registerUser.fulfilled, (state, action) => {
-        state.loading = false;
+        state.isLoading = false;
         state.user = action.payload;
         state.isAuthenticated = true;
       })
       .addCase(registerUser.rejected, (state, action) => {
-        state.loading = false;
+        state.isLoading = false;
         state.error = action.payload as string;
       });
   },

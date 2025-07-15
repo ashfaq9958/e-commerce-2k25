@@ -4,6 +4,7 @@ import type { NotificationState } from "../types/notification.types";
 const initialState: NotificationState = {
   message: null,
   type: null,
+  
 };
 
 const notificationSlice = createSlice({

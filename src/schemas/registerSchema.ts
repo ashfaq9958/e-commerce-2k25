@@ -39,4 +39,12 @@ export const registerSchema = z.object({
     .regex(/[^a-zA-Z0-9]/, {
       message: "Password must include at least one special character",
     }),
+  avatar: z.custom<FileList>().refine(
+    (file) =>
+      !file ||
+      (file.length === 1 &&
+        file[0].type.startsWith("image/") &&
+        file[0].size <= 2 * 1024 * 1024), // 2 MB
+    "Please upload an image under 2MB for the avatar."
+  ),
 });

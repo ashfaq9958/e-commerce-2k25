@@ -3,16 +3,11 @@ export interface LoginPayload {
   password: string;
 }
 
-export interface RegisterPayload {
-  fullname: string;
-  username: string;
-  email: string;
-  password: string;
-}
+export type RegisterPayload = FormData;
 
 export interface AuthState {
   isAuthenticated: boolean;
   user: any;
-  loading: boolean;
+  isLoading: boolean;
   error: string | null;
 }

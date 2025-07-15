@@ -4,13 +4,13 @@ const baseURL = import.meta.env.VITE_BASE_URL;
 
 const axiosInstance = axios.create({
   baseURL,
-  headers: {
-    "Content-Type": "application/json",
-  },
+  // headers: {
+  //   "Content-Type": "application/json",
+  // },
 });
 
 axiosInstance.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token"); 
+  const token = localStorage.getItem("token");
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -24,6 +24,7 @@ export const get = (url: string, config = {}) => {
 };
 
 export const post = (url: string, data: any, config = {}) => {
+  console.log(url);
   return axiosInstance.post(url, data, config);
 };
 

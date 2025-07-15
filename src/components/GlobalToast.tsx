@@ -1,12 +1,21 @@
 import { useEffect } from "react";
 import { clearNotification } from "@/features/notification/rudex/notificationSlice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import type { NotificationState } from "@/features/notification/types/notification.types";
 
 const GlobalToast = () => {
   const { message, type } = useAppSelector((state) => state.notification);
   const dispatch = useAppDispatch();
+
+  const formattedDate = new Date().toLocaleString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
 
   const showToast = (
     type: Exclude<NotificationState["type"], null>,
@@ -20,10 +29,14 @@ const GlobalToast = () => {
 
     switch (type) {
       case "success":
-        toast.success(message, options);
+        toast.success(message, {
+          description: formattedDate,
+        });
         break;
       case "error":
-        toast.error(message, options);
+        toast.error(message, {
+          description: formattedDate,
+        });
         break;
       case "loading":
         toast.loading(message, {
