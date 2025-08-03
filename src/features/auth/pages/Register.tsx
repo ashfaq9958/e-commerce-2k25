@@ -140,42 +140,7 @@ const RegisterForm = () => {
               </FormItem>
             )}
           />
-
-          {/* Picture */}
-          <FormField
-            name="avatar"
-            control={form.control}
-            render={({ field: { onChange, ref, name } }) => (
-              <FormItem>
-                <FormControl>
-                  <div className="relative">
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      name={name}
-                      ref={ref}
-                      onChange={(e) => {
-                        const fileList = e.target.files;
-                        if (fileList && fileList.length > 0) {
-                          onChange(fileList); // 👈 Important: Pass FileList to RHF
-                          const reader = new FileReader();
-                          reader.onloadend = () => {
-                            setPreview(reader.result as string);
-                          };
-                          reader.readAsDataURL(fileList[0]);
-                        }
-                      }}
-                      className="h-11 border-none w-full py-3 pr-12 pl-5 bg-gray-100 rounded-lg text-base text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-300"
-                    />
-
-                    <Image className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-600" />
-                  </div>
-                </FormControl>
-                <FormMessage className="text-start text-xs" />
-              </FormItem>
-            )}
-          />
-
+          
           {/* Email */}
           <FormField
             name="email"
@@ -229,6 +194,41 @@ const RegisterForm = () => {
             )}
           />
 
+          {/* Picture */}
+          <FormField
+            name="avatar"
+            control={form.control}
+            render={({ field: { onChange, ref, name } }) => (
+              <FormItem>
+                <FormControl>
+                  <div className="relative">
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      name={name}
+                      ref={ref}
+                      onChange={(e) => {
+                        const fileList = e.target.files;
+                        if (fileList && fileList.length > 0) {
+                          onChange(fileList); // 👈 Important: Pass FileList to RHF
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            setPreview(reader.result as string);
+                          };
+                          reader.readAsDataURL(fileList[0]);
+                        }
+                      }}
+                      className="h-11 border-none w-full py-3 pr-12 pl-5 bg-gray-100 rounded-lg text-base text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                    />
+
+                    <Image className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-600" />
+                  </div>
+                </FormControl>
+                <FormMessage className="text-start text-xs" />
+              </FormItem>
+            )}
+          />
+
           {/* Sign Up Button */}
           <button
             type="submit"
@@ -242,12 +242,12 @@ const RegisterForm = () => {
           </button>
 
           {/* Social Divider */}
-          <p className="text-sm text-gray-500 text-center my-4">
+          {/* <p className="text-sm text-gray-500 text-center my-4">
             or register with social platforms
-          </p>
+          </p> */}
 
           {/* Google Button */}
-          <div className="flex justify-center">
+          {/* <div className="flex justify-center">
             <button
               type="button"
               className="flex items-center justify-center gap-3 w-full  py-3 px-5 border border-gray-300 rounded-lg shadow-sm bg-white hover:border-black hover:bg-gray-50 transition-all"
@@ -257,7 +257,7 @@ const RegisterForm = () => {
                 Continue with Google
               </span>
             </button>
-          </div>
+          </div> */}
         </form>
       </Form>
     </div>
