@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 
-export function Unauthorized() {
+export default function Unauthorized() {
   const navigate = useNavigate();
 
   return (
